@@ -1,3 +1,5 @@
+//resultadooperacion.java
+
 public class ResultadoOperacion {
     private boolean exito;
     private String mensaje;

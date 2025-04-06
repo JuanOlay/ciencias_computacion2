@@ -1,3 +1,5 @@
+//resultadobusqueda.java
+
 public class ResultadoBusqueda extends ResultadoOperacion {
     private int comparaciones;
     
