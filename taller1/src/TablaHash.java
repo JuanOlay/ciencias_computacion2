@@ -3,8 +3,11 @@
 import java.util.Arrays;
 
 public class TablaHash {
+    @SuppressWarnings("FieldMayBeFinal")
     private int[] tablaHash;
+    @SuppressWarnings("FieldMayBeFinal")
     private int numClaves;
+    @SuppressWarnings("FieldMayBeFinal")
     private int digitosClaves;
     
     public TablaHash(int numClaves, int digitosClaves) {
@@ -128,39 +131,71 @@ public class TablaHash {
         int indice = 0;
         
         switch (metodo) {
-            case "Módulo":
-                indice = clave % numClaves;
-                break;
-            case "Cuadrado":
+            case "Módulo" -> indice = clave % numClaves;
+            case "Cuadrado" -> {
                 int cuadrado = clave * clave;
                 String cuadradoStr = String.valueOf(cuadrado);
+                
+                // Determinar cuántos dígitos necesitamos extraer basado en numClaves
+                int digitosNecesarios = String.valueOf(numClaves).length();
+                
                 // Extraer dígitos del centro
-                int inicio = Math.max(0, (cuadradoStr.length() - digitosClaves) / 2);
+                int inicio = Math.max(0, (cuadradoStr.length() - digitosNecesarios) / 2);
                 String parteMedia = cuadradoStr.substring(
-                    inicio, 
-                    Math.min(inicio + digitosClaves, cuadradoStr.length())
+                        inicio,
+                        Math.min(inicio + digitosNecesarios, cuadradoStr.length())
                 );
+                
+                // Convertir a entero y aplicar módulo
                 indice = Integer.parseInt(parteMedia) % numClaves;
-                break;
-            case "Plegamiento":
-                // Corregido: Plegamiento por suma de grupos de dígitos
-                String claveStr = String.format("%0" + digitosClaves + "d", clave);
+            }
+            case "Plegamiento" -> {
+                String claveStr = String.valueOf(clave); // Convertir a string sin padding
                 int suma = 0;
-                // Sumar cada dígito individualmente
-                for (int i = 0; i < claveStr.length(); i++) {
-                    suma += Character.getNumericValue(claveStr.charAt(i));
+                
+                // Determinar tamaño de grupo basado en la longitud de la tabla
+                int tamanoGrupo;
+                if (numClaves < 10) {
+                    tamanoGrupo = 1;
+                } else if (numClaves < 100) {
+                    tamanoGrupo = 1;
+                } else if (numClaves < 1000) {
+                    tamanoGrupo = 2;
+                } else {
+                    tamanoGrupo = 3;
                 }
-                indice = suma % numClaves;
-                break;
-            case "Truncamiento":
-                String claveCompleta = String.format("%0" + digitosClaves + "d", clave);
-                // Tomar dígitos en posiciones específicas (por ejemplo, primero y último)
-                StringBuilder truncado = new StringBuilder();
-                truncado.append(claveCompleta.charAt(0));
-                truncado.append(claveCompleta.charAt(claveCompleta.length() / 2));
-                truncado.append(claveCompleta.charAt(claveCompleta.length() - 1));
-                indice = Integer.parseInt(truncado.toString()) % numClaves;
-                break;
+                
+                // Dividir la clave en grupos y sumarlos
+                for (int i = 0; i < claveStr.length(); i += tamanoGrupo) {
+                    int endIndex = Math.min(i + tamanoGrupo, claveStr.length());
+                    String grupo = claveStr.substring(i, endIndex);
+                    suma += Integer.parseInt(grupo);
+                }
+                
+                // Si la suma es mayor que la longitud de la tabla, aplicar módulo
+                if (suma > numClaves) {
+                    suma = suma % numClaves;
+                }
+                
+                indice = suma;
+            }
+            case "Truncamiento" -> {
+                String claveStr = String.valueOf(clave);
+                
+                // Determinar cuántos dígitos tomar basado en la longitud de la tabla
+                int digitosATomar = String.valueOf(numClaves).length();
+                
+                // Tomar los últimos dígitos de la clave
+                String ultimosDigitos;
+                if (claveStr.length() <= digitosATomar) {
+                    ultimosDigitos = claveStr; // Si la clave es más corta, usar completa
+                } else {
+                    ultimosDigitos = claveStr.substring(claveStr.length() - digitosATomar);
+                }
+                
+                // Convertir a entero y aplicar módulo
+                indice = Integer.parseInt(ultimosDigitos) % numClaves;
+            }
         }
         
         return indice;

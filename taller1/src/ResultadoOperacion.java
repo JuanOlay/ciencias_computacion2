@@ -1,8 +1,11 @@
 //resultadooperacion.java
 
 public class ResultadoOperacion {
+    @SuppressWarnings("FieldMayBeFinal")
     private boolean exito;
+    @SuppressWarnings("FieldMayBeFinal")
     private String mensaje;
+    @SuppressWarnings("FieldMayBeFinal")
     private int posicion;
     
     public ResultadoOperacion(boolean exito, String mensaje, int posicion) {

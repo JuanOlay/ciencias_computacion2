@@ -4,6 +4,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public class Main {
+    @SuppressWarnings({"CallToPrintStackTrace", "UseSpecificCatch"})
     public static void main(String[] args) {
         try {
             // Usar el aspecto nativo del sistema

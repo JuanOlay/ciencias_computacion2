@@ -1,4 +1,7 @@
+// tablahashcontrolador.java
+
 public class TablaHashControlador {
+    @SuppressWarnings("FieldMayBeFinal")
     private TablaHashApp vista;
     private TablaHash modelo;
     private String metodoHash;

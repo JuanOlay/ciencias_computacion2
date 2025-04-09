@@ -1,4 +1,4 @@
-//tablahashapp.java
+// TablaHashApp.java
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -18,19 +18,34 @@ public class TablaHashApp extends JFrame {
     private JPanel panelBotones;
     
     // Controlador
+    @SuppressWarnings("FieldMayBeFinal")
     private TablaHashControlador controlador;
     
     // Lista para almacenar claves originales
+    @SuppressWarnings("FieldMayBeFinal")
     private List<Integer> clavesOriginales;
     
     // Método hash seleccionado
     private String metodoHash;
     
+    @SuppressWarnings("UseSpecificCatch")
     public TablaHashApp() {
-        super("Sistema de Tabla Hash");
+        super("Tabla"); // Título de la ventana: "Tabla"
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        
+        // Se aplica el Look & Feel Nimbus (si está disponible)
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            // Se usa el Look & Feel por defecto si Nimbus no está disponible
+        }
         
         // Inicializar lista de claves
         clavesOriginales = new ArrayList<>();
@@ -38,19 +53,19 @@ public class TablaHashApp extends JFrame {
         // Inicializar controlador
         controlador = new TablaHashControlador(this);
         
-        // Mostrar diálogo de configuración inicial
+        // Mostrar diálogo de configuración
         mostrarDialogoConfiguracion();
         
         setVisible(true);
     }
     
     private void inicializarComponentes(int numClaves) {
-        // Panel principal con BorderLayout
+        // Panel principal con BorderLayout y márgenes ajustados
         JPanel panelPrincipal = new JPanel(new BorderLayout(10, 10));
         panelPrincipal.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         panelPrincipal.setBackground(new Color(245, 245, 250));
         
-        // Panel superior con información
+        // Panel superior con información (se muestra "Tabla")
         JPanel panelInfo = new JPanel();
         panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
         panelInfo.setBackground(new Color(245, 245, 250));
@@ -59,7 +74,7 @@ public class TablaHashApp extends JFrame {
             new EmptyBorder(10, 10, 10, 10)
         ));
         
-        JLabel lblTitulo = new JLabel("Tabla Hash");
+        JLabel lblTitulo = new JLabel("Tabla"); // Texto actualizado
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
         
@@ -71,23 +86,21 @@ public class TablaHashApp extends JFrame {
         panelInfo.add(Box.createRigidArea(new Dimension(0, 5)));
         panelInfo.add(lblMetodo);
         
-        // Crear modelo de tabla horizontal (con columnas para los índices)
+        // --- Creación de la tabla de forma vertical ---
+        // Se mantienen dos columnas: "Índice" y "Valor"
         modeloTabla = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // No permitir edición de celdas
+                return false;
             }
         };
-        
         modeloTabla.addColumn("Índice");
         modeloTabla.addColumn("Valor");
         
-        // Añadir filas para cada posición
         for (int i = 0; i < numClaves; i++) {
             modeloTabla.addRow(new Object[]{i + 1, ""});
         }
         
-        // Crear tabla
         tabla = new JTable(modeloTabla);
         tabla.setRowHeight(35);
         tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -99,13 +112,13 @@ public class TablaHashApp extends JFrame {
         tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tabla.setSelectionBackground(new Color(210, 230, 255));
         
-        // Centrar contenido de celdas
+        // Centrar contenido en ambas columnas
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         tabla.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         tabla.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
         
-        // Ajustar ancho de columnas
+        // Ajuste opcional del ancho de cada columna
         tabla.getColumnModel().getColumn(0).setPreferredWidth(100);
         tabla.getColumnModel().getColumn(1).setPreferredWidth(300);
         
@@ -121,7 +134,7 @@ public class TablaHashApp extends JFrame {
         scrollResultado = new JScrollPane(txtResultado);
         scrollResultado.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 220), 1, true), 
+                BorderFactory.createLineBorder(new Color(200, 200, 220), 1, true),
                 "Resultados",
                 0,
                 0,
@@ -136,17 +149,16 @@ public class TablaHashApp extends JFrame {
         panelBotones.setBackground(new Color(245, 245, 250));
         panelBotones.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         
-        // Crear botones con estilo
         JButton btnInsertar = crearBoton("Insertar Claves", "Añadir nuevas claves a la tabla");
         btnInsertar.addActionListener(e -> mostrarDialogoInsercion());
         
-        JButton btnBuscar = crearBoton("Buscar Clave", "Buscar una clave en la tabla hash");
+        JButton btnBuscar = crearBoton("Buscar Clave", "Buscar una clave en la tabla");
         btnBuscar.addActionListener(e -> mostrarDialogoBusqueda());
         
         JButton btnBorrar = crearBoton("Borrar Clave", "Eliminar una clave de la tabla");
         btnBorrar.addActionListener(e -> mostrarDialogoBorrado());
         
-        JButton btnReiniciar = crearBoton("Reiniciar", "Crear una nueva tabla hash");
+        JButton btnReiniciar = crearBoton("Reiniciar", "Crear una nueva tabla");
         btnReiniciar.addActionListener(e -> reiniciarAplicacion());
         
         panelBotones.add(btnInsertar);
@@ -154,20 +166,18 @@ public class TablaHashApp extends JFrame {
         panelBotones.add(btnBorrar);
         panelBotones.add(btnReiniciar);
         
-        // Agregar componentes al panel principal
         panelPrincipal.add(panelInfo, BorderLayout.NORTH);
         panelPrincipal.add(scrollTabla, BorderLayout.CENTER);
         panelPrincipal.add(scrollResultado, BorderLayout.SOUTH);
         panelPrincipal.add(panelBotones, BorderLayout.PAGE_END);
         
-        // Limpiar y agregar el panel principal
         getContentPane().removeAll();
         getContentPane().add(panelPrincipal);
         revalidate();
         repaint();
     }
     
-    // Método para crear botones con estilo
+    // Método para crear botones con mejoras visuales
     private JButton crearBoton(String texto, String tooltip) {
         JButton boton = new JButton(texto);
         boton.setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -175,25 +185,22 @@ public class TablaHashApp extends JFrame {
         boton.setForeground(new Color(60, 60, 80));
         boton.setFocusPainted(false);
         boton.setToolTipText(tooltip);
-        
-        // Efectos al pasar el mouse
         boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @SuppressWarnings("override")
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 boton.setBackground(new Color(210, 210, 230));
             }
-
+            @SuppressWarnings("override")
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 boton.setBackground(new Color(230, 230, 245));
             }
         });
-        
         return boton;
     }
     
-    // Métodos para mostrar diálogos
-    
+    // Diálogo de configuración actualizado para utilizar "Tabla"
     private void mostrarDialogoConfiguracion() {
-        JDialog dialogo = new JDialog(this, "Configuración de Tabla Hash", true);
+        JDialog dialogo = new JDialog(this, "Configuración de Tabla", true);
         dialogo.setSize(450, 350);
         dialogo.setLocationRelativeTo(this);
         dialogo.setLayout(new BorderLayout());
@@ -203,7 +210,7 @@ public class TablaHashApp extends JFrame {
         panelContenido.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         panelContenido.setBackground(new Color(250, 250, 255));
         
-        JLabel lblTitulo = new JLabel("Configuración de la Tabla Hash");
+        JLabel lblTitulo = new JLabel("Configuración de Tabla");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
         
@@ -236,13 +243,23 @@ public class TablaHashApp extends JFrame {
         panelParametros.add(lblMetodo);
         panelParametros.add(cmbMetodos);
         
-        JButton btnCrear = new JButton("Crear Tabla Hash");
+        JButton btnCrear = new JButton("Crear Tabla");
         btnCrear.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnCrear.setBackground(new Color(100, 150, 220));
         btnCrear.setForeground(Color.WHITE);
         btnCrear.setFocusPainted(false);
         btnCrear.setBorderPainted(false);
         btnCrear.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btnCrear.addMouseListener(new java.awt.event.MouseAdapter() {
+            @SuppressWarnings("override")
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnCrear.setBackground(new Color(80, 130, 200));
+            }
+            @SuppressWarnings("override")
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnCrear.setBackground(new Color(100, 150, 220));
+            }
+        });
         
         btnCrear.addActionListener(e -> {
             try {
@@ -269,17 +286,6 @@ public class TablaHashApp extends JFrame {
             }
         });
         
-        // Efectos al pasar el mouse
-        btnCrear.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnCrear.setBackground(new Color(80, 130, 200));
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnCrear.setBackground(new Color(100, 150, 220));
-            }
-        });
-        
         panelContenido.add(lblTitulo);
         panelContenido.add(Box.createRigidArea(new Dimension(0, 10)));
         panelContenido.add(panelParametros);
@@ -292,7 +298,6 @@ public class TablaHashApp extends JFrame {
     }
     
     private void mostrarDialogoInsercion() {
-        // Diálogo para insertar claves
         JDialog dialogo = new JDialog(this, "Insertar Claves", true);
         dialogo.setSize(500, 400);
         dialogo.setLocationRelativeTo(this);
@@ -322,7 +327,6 @@ public class TablaHashApp extends JFrame {
         panelNorte.add(btnAgregar);
         panelNorte.add(btnFinalizar);
         
-        // Lista de claves insertadas
         DefaultListModel<String> modeloLista = new DefaultListModel<>();
         JList<String> listaClaves = new JList<>(modeloLista);
         listaClaves.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -355,7 +359,6 @@ public class TablaHashApp extends JFrame {
                 
                 if (resultado.isExito()) {
                     modeloLista.addElement("Clave: " + clave + " → Posición: " + (resultado.getPosicion() + 1));
-                    // Guardar la clave original si no existe
                     if (!clavesOriginales.contains(clave)) {
                         clavesOriginales.add(clave);
                     }
@@ -373,22 +376,23 @@ public class TablaHashApp extends JFrame {
         
         btnFinalizar.addActionListener(e -> dialogo.dispose());
         
-        // Efectos al pasar el mouse
         btnAgregar.addMouseListener(new java.awt.event.MouseAdapter() {
+            @SuppressWarnings("override")
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btnAgregar.setBackground(new Color(80, 130, 200));
             }
-
+            @SuppressWarnings("override")
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 btnAgregar.setBackground(new Color(100, 150, 220));
             }
         });
         
         btnFinalizar.addMouseListener(new java.awt.event.MouseAdapter() {
+            @SuppressWarnings("override")
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btnFinalizar.setBackground(new Color(210, 210, 230));
             }
-
+            @SuppressWarnings("override")
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 btnFinalizar.setBackground(new Color(230, 230, 245));
             }
@@ -404,11 +408,9 @@ public class TablaHashApp extends JFrame {
         dialogo.setVisible(true);
     }
     
-    // Método mostrarDialogoBusqueda mejorado con botón continuar más explícito
     private void mostrarDialogoBusqueda() {
-        // Crear el diálogo principal
         JDialog dialogoMetodo = new JDialog(this, "Método de Búsqueda", true);
-        dialogoMetodo.setSize(400, 300);  // Un poco más alto para acomodar mejor el botón
+        dialogoMetodo.setSize(400, 300);
         dialogoMetodo.setLocationRelativeTo(this);
         dialogoMetodo.setLayout(new BorderLayout());
         
@@ -422,8 +424,6 @@ public class TablaHashApp extends JFrame {
         lblTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         String[] opciones = {"Búsqueda por Hash", "Búsqueda Lineal", "Búsqueda Binaria"};
-        
-        // Panel para los radio buttons
         JPanel panelOpciones = new JPanel(new GridLayout(3, 1, 0, 10));
         panelOpciones.setBackground(new Color(250, 250, 255));
         panelOpciones.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
@@ -431,7 +431,6 @@ public class TablaHashApp extends JFrame {
         
         ButtonGroup grupo = new ButtonGroup();
         JRadioButton[] radioBotones = new JRadioButton[3];
-        
         for (int i = 0; i < opciones.length; i++) {
             radioBotones[i] = new JRadioButton(opciones[i]);
             radioBotones[i].setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -439,23 +438,28 @@ public class TablaHashApp extends JFrame {
             grupo.add(radioBotones[i]);
             panelOpciones.add(radioBotones[i]);
         }
-        
-        // Seleccionar la primera opción por defecto
         radioBotones[0].setSelected(true);
         
-        // Panel para el botón continuar
         JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panelBoton.setBackground(new Color(250, 250, 255));
-        panelBoton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        // Botón continuar con texto más descriptivo
         JButton btnContinuar = new JButton("Continuar con la búsqueda");
         btnContinuar.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnContinuar.setBackground(new Color(100, 150, 220));
         btnContinuar.setForeground(Color.WHITE);
         btnContinuar.setFocusPainted(false);
         btnContinuar.setBorderPainted(false);
-        btnContinuar.setPreferredSize(new Dimension(200, 40)); // Botón más grande
+        btnContinuar.setPreferredSize(new Dimension(200, 40));
+        
+        btnContinuar.addMouseListener(new java.awt.event.MouseAdapter() {
+            @SuppressWarnings("override")
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnContinuar.setBackground(new Color(80, 130, 200));
+            }
+            @SuppressWarnings("override")
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnContinuar.setBackground(new Color(100, 150, 220));
+            }
+        });
         
         btnContinuar.addActionListener(e -> {
             String opcionSeleccionada = "";
@@ -465,21 +469,8 @@ public class TablaHashApp extends JFrame {
                     break;
                 }
             }
-            
             dialogoMetodo.dispose();
-            // Llamamos explícitamente al método para pedir la clave
             pedirClaveBusqueda(opcionSeleccionada);
-        });
-        
-        // Efectos al pasar el mouse
-        btnContinuar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnContinuar.setBackground(new Color(80, 130, 200));
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnContinuar.setBackground(new Color(100, 150, 220));
-            }
         });
         
         panelBoton.add(btnContinuar);
@@ -494,9 +485,8 @@ public class TablaHashApp extends JFrame {
         dialogoMetodo.setResizable(false);
         dialogoMetodo.setVisible(true);
     }
-
-
-
+    
+    @SuppressWarnings("ConvertToStringSwitch")
     private void pedirClaveBusqueda(String opcion) {
         String claveStr = JOptionPane.showInputDialog(this, 
             "Ingrese la clave a buscar:", 
@@ -517,32 +507,26 @@ public class TablaHashApp extends JFrame {
                 resultado = controlador.buscarClaveBinaria(clave);
             }
             
-            // Destacar la posición en la tabla
             destacarPosicion(resultado.getPosicion());
-            
-            // Registrar el resultado en el área de texto
             mostrarMensaje(resultado.getMensaje());
             
-            // Mostrar ventana emergente con información detallada
             String titulo = resultado.isExito() ? 
                 "¡Clave Encontrada!" : "Clave No Encontrada";
-            
             String mensaje = "<html><body style='width: 300px'>";
             if (resultado.isExito()) {
                 mensaje += "<h3 style='color: green;'>Resultado de la búsqueda</h3>";
                 mensaje += "<p><b>Clave:</b> " + clave + "</p>";
                 mensaje += "<p><b>Posición:</b> " + (resultado.getPosicion() + 1) + "</p>";
                 mensaje += "<p><b>Método:</b> " + opcion + "</p>";
-                mensaje += "<p><b>Comparaciones realizadas:</b> " + resultado.getComparaciones() + "</p>";
+                mensaje += "<p><b>Comparaciones:</b> " + resultado.getComparaciones() + "</p>";
             } else {
                 mensaje += "<h3 style='color: red;'>Clave no encontrada</h3>";
                 mensaje += "<p><b>Clave buscada:</b> " + clave + "</p>";
                 mensaje += "<p><b>Método:</b> " + opcion + "</p>";
-                mensaje += "<p><b>Comparaciones realizadas:</b> " + resultado.getComparaciones() + "</p>";
+                mensaje += "<p><b>Comparaciones:</b> " + resultado.getComparaciones() + "</p>";
             }
             mensaje += "</body></html>";
             
-            // Usar un JOptionPane para mostrar la información en una ventana emergente
             JOptionPane.showMessageDialog(
                 this,
                 mensaje,
@@ -554,105 +538,7 @@ public class TablaHashApp extends JFrame {
                 "Ingrese una clave numérica válida.", 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
-            
-            // Volvemos a pedir la clave si hubo error
             pedirClaveBusqueda(opcion);
-        }
-    }
-        
-    private void realizarBusqueda(String opcion) {
-        // Crear un diálogo para ingresar la clave
-        JDialog dialogoClave = new JDialog(this, "Ingrese Clave", true);
-        dialogoClave.setSize(350, 200);
-        dialogoClave.setLocationRelativeTo(this);
-        dialogoClave.setLayout(new BorderLayout());
-        
-        JPanel panelContenido = new JPanel();
-        panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
-        panelContenido.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        panelContenido.setBackground(new Color(250, 250, 255));
-        
-        JLabel lblTitulo = new JLabel("Ingrese la clave a buscar:");
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        JTextField txtClave = new JTextField(10);
-        txtClave.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        txtClave.setAlignmentX(Component.LEFT_ALIGNMENT);
-        txtClave.setMaximumSize(new Dimension(Integer.MAX_VALUE, txtClave.getPreferredSize().height));
-        
-        JButton btnBuscar = new JButton("Buscar");
-        btnBuscar.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnBuscar.setBackground(new Color(100, 150, 220));
-        btnBuscar.setForeground(Color.WHITE);
-        btnBuscar.setFocusPainted(false);
-        btnBuscar.setBorderPainted(false);
-        btnBuscar.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        btnBuscar.addActionListener(e -> {
-            String claveStr = txtClave.getText().trim();
-            if (claveStr.isEmpty()) {
-                JOptionPane.showMessageDialog(dialogoClave, 
-                    "Ingrese una clave válida.", 
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            try {
-                int clave = Integer.parseInt(claveStr);
-                dialogoClave.dispose();
-                
-                // Realizar búsqueda según el método seleccionado
-                if (opcion.equals("Búsqueda por Hash")) {
-                    ResultadoBusqueda resultado = controlador.buscarClaveHash(clave, metodoHash);
-                    mostrarMensaje(resultado.getMensaje());
-                    destacarPosicion(resultado.getPosicion());
-                } else if (opcion.equals("Búsqueda Lineal")) {
-                    ResultadoBusqueda resultado = controlador.buscarClaveLineal(clave);
-                    mostrarMensaje(resultado.getMensaje());
-                    destacarPosicion(resultado.getPosicion());
-                } else if (opcion.equals("Búsqueda Binaria")) {
-                    ResultadoBusqueda resultado = controlador.buscarClaveBinaria(clave);
-                    mostrarMensaje(resultado.getMensaje());
-                    destacarPosicion(resultado.getPosicion());
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(dialogoClave, 
-                    "Ingrese una clave numérica válida.", 
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        
-        // Efectos al pasar el mouse
-        btnBuscar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnBuscar.setBackground(new Color(80, 130, 200));
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnBuscar.setBackground(new Color(100, 150, 220));
-            }
-        });
-        
-        panelContenido.add(lblTitulo);
-        panelContenido.add(Box.createRigidArea(new Dimension(0, 15)));
-        panelContenido.add(txtClave);
-        panelContenido.add(Box.createRigidArea(new Dimension(0, 20)));
-        panelContenido.add(btnBuscar);
-        
-        dialogoClave.add(panelContenido, BorderLayout.CENTER);
-        dialogoClave.setResizable(false);
-        dialogoClave.setVisible(true);
-    }
-    
-    private void destacarPosicion(int posicion) {
-        if (posicion >= 0 && posicion < tabla.getRowCount()) {
-            tabla.setRowSelectionInterval(posicion, posicion);
-            tabla.scrollRectToVisible(tabla.getCellRect(posicion, 0, true));
-        } else {
-            tabla.clearSelection();
         }
     }
     
@@ -671,7 +557,6 @@ public class TablaHashApp extends JFrame {
             
             if (resultado.isExito()) {
                 actualizarTabla();
-                // Remover de la lista de claves originales
                 clavesOriginales.remove(Integer.valueOf(clave));
             }
         } catch (NumberFormatException ex) {
@@ -698,27 +583,34 @@ public class TablaHashApp extends JFrame {
         }
     }
     
-    // Método para actualizar la visualización de la tabla
+    // Actualiza la tabla vertical: se colocan los valores en la columna "Valor"
     public void actualizarTabla() {
         int[] tablaHash = controlador.getTablaHash().getTablaHash();
-        
         for (int i = 0; i < tablaHash.length; i++) {
             if (tablaHash[i] != -1) {
                 modeloTabla.setValueAt(tablaHash[i], i, 1);
             } else {
-                modeloTabla.setValueAt("", i, 1); // Celda vacía
+                modeloTabla.setValueAt("", i, 1);
             }
         }
     }
     
-    // Método para mostrar mensajes en el área de resultados
+    // Muestra mensajes en el área de resultados
     public void mostrarMensaje(String mensaje) {
         txtResultado.append(mensaje + "\n");
-        // Desplazar al final
         txtResultado.setCaretPosition(txtResultado.getDocument().getLength());
     }
     
-    // Getter para el método hash seleccionado
+    // Destaca la fila correspondiente a la posición
+    private void destacarPosicion(int posicion) {
+        if (posicion >= 0 && posicion < tabla.getRowCount()) {
+            tabla.setRowSelectionInterval(posicion, posicion);
+            tabla.scrollRectToVisible(tabla.getCellRect(posicion, 0, true));
+        } else {
+            tabla.clearSelection();
+        }
+    }
+    
     public String getMetodoHash() {
         return metodoHash;
     }
