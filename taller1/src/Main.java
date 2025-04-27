@@ -19,6 +19,6 @@ public class Main {
             e.printStackTrace();
         }
         
-        SwingUtilities.invokeLater(() -> new TablaHashApp());
+        SwingUtilities.invokeLater(() -> new PantallaInicio());
     }
 }

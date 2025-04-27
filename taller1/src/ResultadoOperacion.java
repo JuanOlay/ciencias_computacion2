@@ -1,11 +1,11 @@
-//resultadooperacion.java
+// ResultadoOperacion.java
+import java.io.Serializable;
 
-public class ResultadoOperacion {
-    @SuppressWarnings("FieldMayBeFinal")
+public class ResultadoOperacion implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private boolean exito;
-    @SuppressWarnings("FieldMayBeFinal")
     private String mensaje;
-    @SuppressWarnings("FieldMayBeFinal")
     private int posicion;
     
     public ResultadoOperacion(boolean exito, String mensaje, int posicion) {
